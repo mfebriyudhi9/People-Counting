@@ -19,13 +19,20 @@ people_out_cam1 = 0
 detected_faces_cam0 = {}
 detected_faces_cam1 = {}
 
+# Flag to stop threads
+exit_flag = False
+
 # Function for processing a single camera
 def process_camera(camera_id):
-    global people_in_cam0, people_out_cam1, detected_faces_cam0, detected_faces_cam1
+    global people_in_cam0, people_out_cam1, detected_faces_cam0, detected_faces_cam1, exit_flag
 
     cap = cv2.VideoCapture(camera_id)  # Use camera_id to capture from the corresponding camera
 
     while True:
+        # Check if exit flag is set to stop the loop
+        if exit_flag:
+            break
+
         ret, frame = cap.read()
         if not ret:
             break
@@ -99,8 +106,9 @@ def process_camera(camera_id):
 
         cv2.imshow(f'People Counting Camera {camera_id}', frame)
 
-        # Exit on 'q' key
+        # Check for 'q' key press to stop program
         if cv2.waitKey(1) & 0xFF == ord('q'):
+            exit_flag = True
             break
 
     # Release resources
